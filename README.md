@@ -1,6 +1,6 @@
 # WmfReader
 
-Swift definitions for structures, enumerations and functions defined in [MS-WMF](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wmf/)
+Swift definitions for structures, enumerations and functions defined in [MS-WMF](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wmf/)
 
 ## Example Usage
 
