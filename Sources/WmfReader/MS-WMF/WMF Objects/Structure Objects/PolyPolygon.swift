@@ -38,7 +38,9 @@ public struct PolyPolygon {
             throw WmfReadError.corrupted
         }
         
-        /// aPoints (variable): An array of 16-bit unsigned integers that define the coordinates of the polygons.
+        /// aPoints (variable): An array of PointS values that define the coordinates of
+        /// the polygons. The length of the array is equal to the sum of all 16-bit integers in the
+        /// aPointsPerPolygon array.
         var aPoints: [PointS] = []
         aPoints.reserveCapacity(numberOfPolygonPoints)
         for _ in 0..<numberOfPolygonPoints {
