@@ -33,7 +33,8 @@ public struct META_PLACEABLE {
         self.hWmf = try dataStream.read(endianess: .littleEndian)
         
         /// BoundingBox (8 bytes): The rectangle in the playback context (or simply the destination rectangle), measured in logical units, for
-        /// displaying the metafile. The size of a logical unit is specified by the Inch field.
+        /// displaying the metafile. The size of a logical unit is specified by the Inch field. See section 2.2.2.18 for details about the
+        /// structure of the BoundingBox field.
         self.boundingBox = try Rect(dataStream: &dataStream)
         
         /// Inch (2 bytes): The number of logical units per inch used to represent the image. This value can be used to scale an image.
@@ -49,7 +50,8 @@ public struct META_PLACEABLE {
         }
         
         /// Checksum (2 bytes): A checksum for the previous 10 16-bit values in the header. This value can be used to determine whether the
-        /// metafile has become corrupted.
+        /// metafile has become corrupted. The value is calculated by initializing the checksum to zero and then XORing it one at a time
+        /// with the 10 16-bit values in the header.
         self.checksum = try dataStream.read(endianess: .littleEndian)
         let calculatedChecksum =
             UInt16((self.key & 0xFFFF)) ^
