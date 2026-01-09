@@ -1,5 +1,5 @@
 //
-//  GET_PRINTINGOFFSET.swift
+//  SETCOPYCOUNT.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,15 +7,15 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.22 GET_PRINTINGOFFSET Record
-/// The GET_PRINTINGOFFSET Record retrieves the offset from the upper-left corner of the physical page where the actual
-/// printing or drawing begins.
+/// [MS-WMF] 2.3.6.39 SETCOPYCOUNT Record
+/// The SETCOPYCOUNT Record sets the number of copies.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct GET_PRINTINGOFFSET {
+public struct SETCOPYCOUNT {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
     public let byteCount: UInt16
+    public let copyCount: UInt16
     
     public init(dataStream: inout DataStream) throws {
         let startPosition = dataStream.position
@@ -23,7 +23,7 @@ public struct GET_PRINTINGOFFSET {
         /// RecordSize (4 bytes): A 32-bit unsigned integer that defines the number of 16-bit WORD structures, defined in [MS-DTYP]
         /// section 2.2.61, in the record.
         self.recordSize = try dataStream.read(endianess: .littleEndian)
-        guard self.recordSize == 5 else {
+        guard self.recordSize == 6 else {
             throw WmfReadError.corrupted
         }
         
@@ -34,18 +34,22 @@ public struct GET_PRINTINGOFFSET {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x000D
-        /// (GET_PRINTINGOFFSET) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0011
+        /// (SETCOPYCOUNT) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .GETPRINTINGOFFSET else {
+        guard self.escapeFunction == .SETCOPYCOUNT else {
             throw WmfReadError.corrupted
         }
         
-        /// ByteCount (2 bytes): A 16-bit unsigned integer that MUST be 0x0000.
+        /// ByteCount (2 bytes): A 16-bit unsigned integer that specifies the size, in bytes, of the CopyCount field.
+        /// This MUST be 0x0002.
         self.byteCount = try dataStream.read(endianess: .littleEndian)
-        guard self.byteCount == 0x0000 else {
+        guard self.byteCount == 0x0002 else {
             throw WmfReadError.corrupted
         }
+        
+        /// CopyCount (2 bytes): A 16-bit unsigned integer that specifies the number of copies to print.
+        self.copyCount = try dataStream.read(endianess: .littleEndian)
         
         guard (dataStream.position - startPosition) / 2 == self.recordSize else {
             throw WmfReadError.corrupted

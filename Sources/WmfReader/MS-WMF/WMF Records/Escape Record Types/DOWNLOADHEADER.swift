@@ -1,5 +1,5 @@
 //
-//  GET_EXTENDED_TEXTMETRICS.swift
+//  DOWNLOADHEADER.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,11 +7,10 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.18 GET_EXTENDED_TEXTMETRICS Record
-/// The GET_EXTENDED_TEXTMETRICS Record gets the extended text metrics that are currently configured on the printer driver
-/// and applies them to the playback device context.
+/// [MS-WMF] 2.3.6.9 DOWNLOADHEADER Record
+/// The DOWNLOADHEADER Record instructs the driver to download all sets of PostScript procedures.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct GET_EXTENDED_TEXTMETRICS {
+public struct DOWNLOADHEADER {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
@@ -34,10 +33,10 @@ public struct GET_EXTENDED_TEXTMETRICS {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0100
-        /// (GET_EXTENDED_TEXTMETRICS) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x100F
+        /// (DOWNLOADHEADER) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .GETEXTENDEDTEXTMETRICS else {
+        guard self.escapeFunction == .DOWNLOADHEADER else {
             throw WmfReadError.corrupted
         }
         

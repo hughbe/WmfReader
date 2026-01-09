@@ -1,5 +1,5 @@
 //
-//  DOWNLOAD_FACE.swift
+//  GETFACENAME.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,10 +7,10 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.8 DOWNLOAD_FACE Record
-/// The DOWNLOAD_FACE Record sends the font face.
+/// [MS-WMF] 2.3.6.19 GETFACENAME Record
+/// The GETFACENAME Record gets the font face name
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct DOWNLOAD_FACE {
+public struct GETFACENAME {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
@@ -33,10 +33,10 @@ public struct DOWNLOAD_FACE {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0202
-        /// (DOWNLOAD_FACE) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0201
+        /// (GETFACENAME) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .DOWNLOADFACE else {
+        guard self.escapeFunction == .GETFACENAME else {
             throw WmfReadError.corrupted
         }
         

@@ -1,5 +1,5 @@
 //
-//  DRAW_PATTERNRECT.swift
+//  QUERYESCSUPPORT.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,18 +7,16 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.10 DRAW_PATTERNRECT Record
-/// The DRAW_PATTERNRECT Record draws a rectangle with a defined pattern.
+/// [MS-WMF] 2.3.6.37 QUERYESCSUPPORT Record
+/// The QUERYESCSUPPORT Record queries the printer driver to determine whether a specific WMF escape function is supported
+/// on the output device.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct DRAW_PATTERNRECT {
+public struct QUERYESCSUPPORT {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
     public let byteCount: UInt16
-    public let position: PointL
-    public let size: PointL
-    public let style: UInt16
-    public let pattern: UInt16
+    public let query: MetafileEscapes
     
     public init(dataStream: inout DataStream) throws {
         let startPosition = dataStream.position
@@ -26,7 +24,7 @@ public struct DRAW_PATTERNRECT {
         /// RecordSize (4 bytes): A 32-bit unsigned integer that defines the number of 16-bit WORD structures, defined in [MS-DTYP]
         /// section 2.2.61, in the record.
         self.recordSize = try dataStream.read(endianess: .littleEndian)
-        guard self.recordSize == 15 else {
+        guard self.recordSize == 6 else {
             throw WmfReadError.corrupted
         }
         
@@ -37,31 +35,23 @@ public struct DRAW_PATTERNRECT {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0019
-        /// (DRAW_PATTERNRECT) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x100E
+        /// (OPENCHANNEL) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .DRAWPATTERNRECT else {
+        guard self.escapeFunction == .OPENCHANNEL else {
             throw WmfReadError.corrupted
         }
         
-        /// ByteCount (2 bytes): A 16-bit unsigned integer that specifies the size, in bytes, of the record data that follows.
-        /// This MUST be 0x0014.
+        /// ByteCount (2 bytes): A 16-bit unsigned integer that specifies the size, in bytes, of the Query field.
+        /// This MUST be 0x0002.
         self.byteCount = try dataStream.read(endianess: .littleEndian)
-        guard self.byteCount == 0x0014 else {
+        guard self.byteCount == 0x0002 else {
             throw WmfReadError.corrupted
         }
         
-        /// Position (8 bytes): A PointL Object (section 2.2.2.15) that defines the position of the rectangle.
-        self.position = try PointL(dataStream: &dataStream)
-        
-        /// Size (8 bytes): A PointL Object that defines the dimensions of the rectangle.
-        self.size = try PointL(dataStream: &dataStream)
-       
-        /// Style (2 bytes): A 16-bit unsigned integer that defines the style.
-        self.style = try dataStream.read(endianess: .littleEndian)
-        
-        /// Pattern (2 bytes): A 16-bit unsigned integer that defines the pattern.
-        self.pattern = try dataStream.read(endianess: .littleEndian)
+        /// Query (2 bytes): A 16-bit unsigned integer that MUST be a value from the MetafileEscapes Enumeraton. This record
+        /// specifies a query of whether this escape is supported.
+        self.query = try MetafileEscapes(dataStream: &dataStream)
         
         guard (dataStream.position - startPosition) / 2 == self.recordSize else {
             throw WmfReadError.corrupted

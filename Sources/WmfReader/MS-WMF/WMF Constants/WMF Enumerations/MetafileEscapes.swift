@@ -59,9 +59,9 @@
 ///  BEGIN_PATH = 0x1000,
 ///  CLIP_TO_PATH = 0x1001,
 ///  END_PATH = 0x1002,
-///  OPEN_CHANNEL = 0x100E,
+///  OPENCHANNEL = 0x100E,
 ///  DOWNLOADHEADER = 0x100F,
-///  CLOSE_CHANNEL = 0x1010,
+///  CLOSECHANNEL = 0x1010,
 ///  POSTSCRIPT_PASSTHROUGH = 0x1013,
 ///  ENCAPSULATED_POSTSCRIPT = 0x1014,
 ///  POSTSCRIPT_IDENTIFY = 0x1015,
@@ -217,14 +217,14 @@ public enum MetafileEscapes: UInt16, DataStreamCreatable {
     /// END_PATH: Ends a path.
     case END_PATH = 0x1002
 
-    /// OPEN_CHANNEL: The same as STARTDOC specified with a NULL document and output filename, data in raw mode, and a type of zero.
-    case OPEN_CHANNEL = 0x100E
+    /// OPENCHANNEL: The same as STARTDOC specified with a NULL document and output filename, data in raw mode, and a type of zero.
+    case OPENCHANNEL = 0x100E
 
     /// DOWNLOADHEADER: Instructs the printer driver to download sets of PostScript procedures.
     case DOWNLOADHEADER = 0x100F
 
-    /// CLOSE_CHANNEL: The same as ENDDOC. See OPEN_CHANNEL.
-    case CLOSE_CHANNEL = 0x1010
+    /// CLOSECHANNEL: The same as ENDDOC. See OPENCHANNEL.
+    case CLOSECHANNEL = 0x1010
 
     /// POSTSCRIPT_PASSTHROUGH: Sends arbitrary data directly to a printer driver, which is expected to process this data only when in PostScript mode. See POSTSCRIPT_IDENTIFY.<14>
     case POSTSCRIPT_PASSTHROUGH = 0x1013

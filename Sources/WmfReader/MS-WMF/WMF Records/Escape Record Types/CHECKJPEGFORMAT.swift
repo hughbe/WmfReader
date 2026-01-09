@@ -1,5 +1,5 @@
 //
-//  GET_PAIRKERNTABLE.swift
+//  CHECKJPEGFORMAT.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,14 +7,15 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.20 GET_PAIRKERNTABLE Record
-/// The GET_PAIRKERNTABLE Record gets the font kern table.
+/// [MS-WMF] 2.3.6.4 CHECKJPEGFORMAT Record
+/// The CHECKJPEGFORMAT Record specifies whether the printer driver supports JPEG image output.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct GET_PAIRKERNTABLE {
+public struct CHECKJPEGFORMAT {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
     public let byteCount: UInt16
+    public let jpegBuffer: [UInt8]
     
     public init(dataStream: inout DataStream) throws {
         let startPosition = dataStream.position
@@ -22,7 +23,7 @@ public struct GET_PAIRKERNTABLE {
         /// RecordSize (4 bytes): A 32-bit unsigned integer that defines the number of 16-bit WORD structures, defined in [MS-DTYP]
         /// section 2.2.61, in the record.
         self.recordSize = try dataStream.read(endianess: .littleEndian)
-        guard self.recordSize == 5 else {
+        guard self.recordSize >= 5 else {
             throw WmfReadError.corrupted
         }
         
@@ -33,18 +34,21 @@ public struct GET_PAIRKERNTABLE {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0102
-        /// (GET_PAIRKERNTABLE) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x1017
+        /// (CHECKJPEGFORMAT) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .GETPAIRKERNTABLE else {
+        guard self.escapeFunction == .CHECKJPEGFORMAT else {
             throw WmfReadError.corrupted
         }
         
-        /// ByteCount (2 bytes): A 16-bit unsigned integer that MUST be 0x0000.
+        /// ByteCount (2 bytes): A 16-bit unsigned integer that specifies the size, in bytes, of the JPEGBuffer field.
         self.byteCount = try dataStream.read(endianess: .littleEndian)
-        guard self.byteCount == 0x0000 else {
+        guard self.recordSize == 5 + self.byteCount / 2 else {
             throw WmfReadError.corrupted
         }
+        
+        /// JPEGBuffer (variable): A buffer of JPEG image data.
+        self.jpegBuffer = try dataStream.readBytes(count: Int(self.byteCount))
         
         guard (dataStream.position - startPosition) / 2 == self.recordSize else {
             throw WmfReadError.corrupted

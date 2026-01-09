@@ -1,5 +1,5 @@
 //
-//  SET_COLORTABLE.swift
+//  CLOSECHANNEL.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,15 +7,15 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.38 SET_COLORTABLE Record
-/// The SET_COLORTABLE Record sets the color table.
+/// [MS-WMF] 2.3.6.7 CLOSECHANNEL Record
+/// The CLOSECHANNEL Record notifies the printer driver that the current print job is ending. This is the same function as the
+/// ENDDOC Record (section 2.3.6.13). A CLOSECHANNEL MUST be preceded by an OPENCHANNEL Record (section 2.3.6.35).
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct SET_COLORTABLE {
+public struct CLOSECHANNEL {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
     public let byteCount: UInt16
-    public let colorTable: [UInt8]
     
     public init(dataStream: inout DataStream) throws {
         let startPosition = dataStream.position
@@ -23,7 +23,7 @@ public struct SET_COLORTABLE {
         /// RecordSize (4 bytes): A 32-bit unsigned integer that defines the number of 16-bit WORD structures, defined in [MS-DTYP]
         /// section 2.2.61, in the record.
         self.recordSize = try dataStream.read(endianess: .littleEndian)
-        guard self.recordSize >= 5 else {
+        guard self.recordSize == 5 else {
             throw WmfReadError.corrupted
         }
         
@@ -34,21 +34,18 @@ public struct SET_COLORTABLE {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0004
-        /// (SET_COLORTABLE) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x1010
+        /// (CLOSECHANNEL) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .SETCOLORTABLE else {
+        guard self.escapeFunction == .CLOSECHANNEL else {
             throw WmfReadError.corrupted
         }
         
-        /// ByteCount (2 bytes): A 16-bit unsigned integer that specifies the size, in bytes, of the ColorTable field.
+        /// ByteCount (2 bytes): A 16-bit unsigned integer that MUST be 0x0000.
         self.byteCount = try dataStream.read(endianess: .littleEndian)
-        guard self.recordSize == 5 + self.byteCount / 2 else {
+        guard self.byteCount == 0x0000 else {
             throw WmfReadError.corrupted
         }
-        
-        /// ColorTable (variable): A ByteCount length byte array containing the color table.
-        self.colorTable = try dataStream.readBytes(count: Int(self.byteCount))
         
         guard (dataStream.position - startPosition) / 2 == self.recordSize else {
             throw WmfReadError.corrupted

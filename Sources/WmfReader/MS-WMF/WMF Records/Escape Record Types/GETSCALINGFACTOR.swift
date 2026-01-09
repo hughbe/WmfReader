@@ -1,5 +1,5 @@
 //
-//  GET_SCALINGFACTOR.swift
+//  GETSCALINGFACTOR.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,10 +7,10 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.24 GET_SCALINGFACTOR Record
-/// The GET_SCALINGFACTOR Record retrieves the scaling factors for the x-axis and the y-axis of a printer.
+/// [MS-WMF] 2.3.6.24 GETSCALINGFACTOR Record
+/// The GETSCALINGFACTOR Record retrieves the scaling factors for the x-axis and the y-axis of a printer.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct GET_SCALINGFACTOR {
+public struct GETSCALINGFACTOR {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
@@ -34,7 +34,7 @@ public struct GET_SCALINGFACTOR {
         }
         
         /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x000E
-        /// (GET_SCALINGFACTOR) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// (GETSCALINGFACTOR) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
         guard self.escapeFunction == .GETSCALINGFACTOR else {
             throw WmfReadError.corrupted

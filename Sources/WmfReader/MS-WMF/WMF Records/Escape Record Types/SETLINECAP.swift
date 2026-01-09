@@ -1,5 +1,5 @@
 //
-//  EPS_PRINTING.swift
+//  SETLINECAP.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,15 +7,15 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.14 EPS_PRINTING Record
-/// The EPS_PRINTING Record indicates the start or end of Encapsulated PostScript (EPS) printing.
+/// [MS-WMF] 2.3.6.40 SETLINECAP Record
+/// The SETLINECAP Record specifies the type of line-ending to use in subsequent graphics operations.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct EPS_PRINTING {
+public struct SETLINECAP {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
     public let byteCount: UInt16
-    public let setEpsPrinting: UInt16
+    public let cap: PostScriptCap
     
     public init(dataStream: inout DataStream) throws {
         let startPosition = dataStream.position
@@ -23,7 +23,7 @@ public struct EPS_PRINTING {
         /// RecordSize (4 bytes): A 32-bit unsigned integer that defines the number of 16-bit WORD structures, defined in [MS-DTYP]
         /// section 2.2.61, in the record.
         self.recordSize = try dataStream.read(endianess: .littleEndian)
-        guard self.recordSize == 6 else {
+        guard self.recordSize == 7 else {
             throw WmfReadError.corrupted
         }
         
@@ -34,26 +34,23 @@ public struct EPS_PRINTING {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0021
-        /// (EPS_PRINTING) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0015
+        /// (SETLINECAP) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .EPSPRINTING else {
+        guard self.escapeFunction == .SETLINECAP else {
             throw WmfReadError.corrupted
         }
         
-        /// ByteCount (2 bytes): A 16-bit unsigned integer that specifies the size, in bytes, of the SetEpsPrinting field.
-        /// This MUST be 0x0002.
+        /// ByteCount (2 bytes): A 16-bit unsigned integer that specifies the size, in bytes, of the Cap field.
+        /// This MUST be 0x0004.
         self.byteCount = try dataStream.read(endianess: .littleEndian)
-        guard self.byteCount == 0x0002 else {
+        guard self.byteCount == 0x0004 else {
             throw WmfReadError.corrupted
         }
         
-        /// SetEpsPrinting (2 bytes): A 16-bit unsigned integer that indicates the start or end of EPS printing.
-        /// If the value is nonzero, the start of EPS printing is indicated; otherwise, the end is indicated.
-        /// Value Meaning
-        /// Start 0x0000 < value The start of EPS printing.
-        /// End 0x0000 The end of EPS printing.
-        self.setEpsPrinting = try dataStream.read(endianess: .littleEndian)
+        /// Cap (4 bytes): A 32-bit signed integer that defines the type of line cap. Possible values are specified in the PostScriptCap
+        /// Enumeration (section 2.1.1.26) table.
+        self.cap = try PostScriptCap(dataStream: &dataStream)
         
         guard (dataStream.position - startPosition) / 2 == self.recordSize else {
             throw WmfReadError.corrupted

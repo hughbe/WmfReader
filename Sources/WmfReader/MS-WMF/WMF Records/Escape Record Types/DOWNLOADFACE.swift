@@ -1,5 +1,5 @@
 //
-//  GET_DEVICEUNITS.swift
+//  DOWNLOADFACE.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,10 +7,10 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.17 GET_DEVICEUNITS Record
-/// The GET_DEVICEUNITS Record gets the current device units.
+/// [MS-WMF] 2.3.6.8 DOWNLOADFACE Record
+/// The DOWNLOADFACE Record sends the font face.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct GET_DEVICEUNITS {
+public struct DOWNLOADFACE {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
@@ -33,10 +33,10 @@ public struct GET_DEVICEUNITS {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x002A
-        /// (GET_DEVICEUNITS) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0202
+        /// (DOWNLOADFACE) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .GETDEVICEUNITS else {
+        guard self.escapeFunction == .DOWNLOADFACE else {
             throw WmfReadError.corrupted
         }
         

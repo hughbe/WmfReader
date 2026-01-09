@@ -109,7 +109,7 @@ public struct PenStyle {
         /// PS_JOIN_BEVEL: Line joins are beveled.
         case bevel = 0x1000
         
-        /// PS_JOIN_MITER: Line joins are mitered when they are within the current limit set by the SET_MITERLIMIT Record (section 2.3.6.42).
+        /// PS_JOIN_MITER: Line joins are mitered when they are within the current limit set by the SETMITERLIMIT Record (section 2.3.6.42).
         /// A join is beveled when it would exceed the limit.
         case miter = 0x2000
     }

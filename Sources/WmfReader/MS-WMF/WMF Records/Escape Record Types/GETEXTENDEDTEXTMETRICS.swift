@@ -1,5 +1,5 @@
 //
-//  OPEN_CHANNEL.swift
+//  GETEXTENDEDTEXTMETRICS.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,11 +7,11 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.35 OPEN_CHANNEL Record
-/// The OPEN_CHANNEL RECORD notifies the printer driver that a new print job is starting. This is the same function as a
-/// STARTDOC Record (section 2.3.6.44) specified with a NULL document and output file name, data in raw mode, and a type of zero.
+/// [MS-WMF] 2.3.6.18 GETEXTENDEDTEXTMETRICS Record
+/// The GETEXTENDEDTEXTMETRICS Record gets the extended text metrics that are currently configured on the printer driver
+/// and applies them to the playback device context.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct OPEN_CHANNEL {
+public struct GETEXTENDEDTEXTMETRICS {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
@@ -34,10 +34,10 @@ public struct OPEN_CHANNEL {
             throw WmfReadError.corrupted
         }
         
-        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x100E
-        /// (OPEN_CHANNEL) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0100
+        /// (GETEXTENDEDTEXTMETRICS) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
-        guard self.escapeFunction == .OPEN_CHANNEL else {
+        guard self.escapeFunction == .GETEXTENDEDTEXTMETRICS else {
             throw WmfReadError.corrupted
         }
         

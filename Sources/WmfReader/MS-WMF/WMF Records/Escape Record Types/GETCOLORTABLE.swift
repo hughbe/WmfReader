@@ -1,5 +1,5 @@
 //
-//  GET_COLORTABLE.swift
+//  GETCOLORTABLE.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,10 +7,10 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.16 GET_COLORTABLE Record
-/// The GET_COLORTABLE Record gets color table values from the printer driver.
+/// [MS-WMF] 2.3.6.16 GETCOLORTABLE Record
+/// The GETCOLORTABLE Record gets color table values from the printer driver.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct GET_COLORTABLE {
+public struct GETCOLORTABLE {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
@@ -38,7 +38,7 @@ public struct GET_COLORTABLE {
         }
         
         /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x0005
-        /// (GET_COLORTABLE) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// (GETCOLORTABLE) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
         guard self.escapeFunction == .GETCOLORTABLE else {
             throw WmfReadError.corrupted

@@ -1,5 +1,5 @@
 //
-//  CHECK_PNGFORMAT.swift
+//  CHECKPNGFORMAT.swift
 //
 //
 //  Created by Hugh Bellamy on 30/11/2020.
@@ -7,11 +7,11 @@
 
 import DataStream
 
-/// [MS-WMF] 2.3.6.5 CHECK_PNGFORMAT Record
-/// The CHECK_PNGFORMAT Record queries the driver to see if it can handle the given PNG image and parses the PNG image to
+/// [MS-WMF] 2.3.6.5 CHECKPNGFORMAT Record
+/// The CHECKPNGFORMAT Record queries the driver to see if it can handle the given PNG image and parses the PNG image to
 /// determine whether the driver can support it.
 /// See section 2.3.6 for the specification of other Escape Record Types.
-public struct CHECK_PNGFORMAT {
+public struct CHECKPNGFORMAT {
     public let recordSize: UInt32
     public let recordFunction: UInt16
     public let escapeFunction: MetafileEscapes
@@ -36,7 +36,7 @@ public struct CHECK_PNGFORMAT {
         }
         
         /// EscapeFunction (2 bytes): A 16-bit unsigned integer that defines the escape function. The value MUST be 0x1018
-        /// (CHECK_PNGFORMAT) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
+        /// (CHECKPNGFORMAT) from the MetafileEscapes Enumeration (section 2.1.1.17) table.
         self.escapeFunction = try MetafileEscapes(dataStream: &dataStream)
         guard self.escapeFunction == .CHECKPNGFORMAT else {
             throw WmfReadError.corrupted
