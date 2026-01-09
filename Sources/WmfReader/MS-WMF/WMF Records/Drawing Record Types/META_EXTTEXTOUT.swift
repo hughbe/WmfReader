@@ -63,8 +63,9 @@ public struct META_EXTTEXTOUT {
             throw WmfReadError.corrupted
         }
 
-        /// Rectangle (8 bytes): An optional 8-byte Rect Object (section 2.2.2.18) that defines the dimensions, in logical coordinates, of a
-        /// rectangle that is used for clipping, opaquing, or both.
+        /// Rectangle (8 bytes): An optional 8-byte Rect Object (section 2.2.2.18).) When either ETO_CLIPPED, ETO_OPAQUE, or both are specified,
+        /// the rectangle defines the dimensions, in logical coordinates, used for clipping, opaquing, or both. When neither ETO_CLIPPED nor ETO_OPAQUE
+        /// is specified, the coordinates in Rectangle are ignored.
         if shouldHaveRectangle {
             self.rectangle = try Rect(dataStream: &dataStream)
         } else {
@@ -73,7 +74,28 @@ public struct META_EXTTEXTOUT {
         
         /// String (variable): A variable-length string that specifies the text to be drawn. The string does not need to be null-terminated,
         /// because StringLength specifies the length of the string. If the length is odd, an extra byte is placed after it so that the following
-        /// member (optional Dx) is aligned on a 16-bit boundary.
+        /// member (optional Dx) is aligned on a 16-bit boundary. The string will be decoded based on the font object currently selected
+        /// into the playback device context. If a font matching the font object’s specification is not found, the decoding is undefined.
+        /// If a matching font is found that matches the charset specified in the font object, the string should be decoded with the
+        /// codepages in the following table.
+        /// CharSet CodePage ID
+        /// ANSI_CHARSET 1252
+        /// OEM_CHARSET 437
+        /// SHIFTJIS_CHARSET 932
+        /// HANGEUL_CHARSET 949
+        /// JOHAB_CHARSET 1361
+        /// GB2312_CHARSET 936
+        /// CHINESEBIG5_CHARSET 950
+        /// HEBREW_CHARSET 1255
+        /// ARABIC_CHARSET 1256
+        /// GREEK_CHARSET 1253
+        /// TURKISH_CHARSET 1254
+        /// BALTIC_CHARSET 1257
+        /// EASTEUROPE_CHARSET 1250
+        /// RUSSIAN_CHARSET 1251
+        /// THAI_CHARSET 874
+        /// VIETNAMESE_CHARSET 1258
+        /// SYMBOL_CHARSET 42
         self.string = try dataStream.readString(count: Int(stringLength), encoding: .ascii) ?? ""
         
         if self.stringLength % 2 != 0 {
