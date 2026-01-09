@@ -34,9 +34,10 @@ public struct META_POLYGON {
             throw WmfReadError.corrupted
         }
         
-        /// NumberOfPoints (2 bytes): A 16-bit signed integer that defines the number of points in the array.
+        /// NumberOfPoints (2 bytes): A 16-bit signed integer that defines the number of points in the array. This value must be greater than
+        /// or equal to 2.
         self.numberOfPoints = try dataStream.read(endianess: .littleEndian)
-        guard self.recordSize == 4 + 2 * self.numberOfPoints else {
+        guard self.numberOfPoints >= 2 && self.recordSize == 4 + 2 * self.numberOfPoints else {
             throw WmfReadError.corrupted
         }
         
