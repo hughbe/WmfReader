@@ -71,7 +71,7 @@ public struct LogColorSpaceW {
         /// field does not specify LCS_CALIBRATED_RGB, this field MUST be ignored.
         self.gammaBlue = try dataStream.read(endianess: .littleEndian)
         
-        /// Filename (variable): An optional, null-terminated Unicode UTF16-LE character string, which specifies the name of a file
+        /// Filename (520 bytes): An optional, null-terminated Unicode UTF16-LE character string, which specifies the name of a file
         /// that contains a color profile. If a file name is specified, and the ColorSpaceType field is set to LCS_CALIBRATED_RGB,
         /// the other fields of this structure SHOULD be ignored.
         self.filename = try dataStream.readString(count: 520, encoding: .utf16LittleEndian)!.trimmingCharacters(in: ["\0"])

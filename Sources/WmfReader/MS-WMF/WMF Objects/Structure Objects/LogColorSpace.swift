@@ -70,7 +70,7 @@ public struct LogColorSpace {
         /// field does not specify LCS_CALIBRATED_RGB, this field MUST be ignored.
         self.gammaBlue = try dataStream.read(endianess: .littleEndian)
         
-        /// Filename (variable): An optional, ASCII charactger string that specifies the name of a file that contains a color profile.
+        /// Filename (260 bytes): An optional, ASCII charactger string that specifies the name of a file that contains a color profile.
         /// If a file name is specified, and the ColorSpaceType field is set to LCS_CALIBRATED_RGB, the other fields of this
         /// structure SHOULD be ignored.
         /// The Endpoints, GammaRed, GammaGreen, and GammaBlue fields are used to specify a logical color space. The Endpoints
