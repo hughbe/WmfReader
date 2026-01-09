@@ -106,9 +106,9 @@ public struct Font {
         /// specify the look of fonts in a general way and are intended for specifying fonts when the exact typeface wanted is not available.
         self.pitchAndFamily = try PitchAndFamily(dataStream: &dataStream)
         
-        /// Facename (variable): A null-terminated string of 8-bit Latin-1 [ISO/IEC-8859-1] ANSI characters that specifies the typeface
-        /// name of the font. The length of this string MUST NOT exceed 32 8-bit characters, including the terminating null.
-        let remainingCount = recordSize - UInt32(dataStream.position - startPosition) / 2
+        /// Facename (32 bytes): A null-terminated string of up to 32 8-bit Latin-1 [ISO/IEC-8859-1] ANSI characters that specifies the typeface
+        /// name of the font. Any characters following the terminating null are ignored.
+        let remainingCount = min(32, recordSize - UInt32(dataStream.position - startPosition) / 2)
         
         guard let s = try dataStream.readString(count: Int(remainingCount) * 2, encoding: .isoLatin1) else {
             throw WmfReadError.corrupted
