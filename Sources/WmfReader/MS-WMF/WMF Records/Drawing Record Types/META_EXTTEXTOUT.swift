@@ -74,7 +74,7 @@ public struct META_EXTTEXTOUT {
         /// String (variable): A variable-length string that specifies the text to be drawn. The string does not need to be null-terminated,
         /// because StringLength specifies the length of the string. If the length is odd, an extra byte is placed after it so that the following
         /// member (optional Dx) is aligned on a 16-bit boundary.
-        self.string = try dataStream.readString(count: Int(stringLength), encoding: .ascii)!
+        self.string = try dataStream.readString(count: Int(stringLength), encoding: .ascii) ?? ""
         
         if self.stringLength % 2 != 0 {
             let _: UInt8 = try dataStream.read()

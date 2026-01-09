@@ -37,7 +37,7 @@ public struct META_ESCAPE {
         }
         
         func readString(recordSize: UInt32) throws -> String {
-            let string = try dataStream.readString(count: Int(recordSize * 2) - 6, encoding: .ascii)!.trimmingCharacters(in: ["\0"])
+            let string = try dataStream.readString(count: Int(recordSize * 2) - 6, encoding: .ascii)?.trimmingCharacters(in: ["\0"]) ?? ""
             guard (dataStream.position - startPosition) / 2 == recordSize else {
                 throw WmfReadError.corrupted
             }

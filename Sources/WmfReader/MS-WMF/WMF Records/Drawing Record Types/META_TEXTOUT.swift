@@ -47,7 +47,7 @@ public struct META_TEXTOUT {
         /// be of a size greater than or equal to StringLength + 1. A variable-length string that specifies the text to be drawn. The
         /// string does not need to be null-terminated, because StringLength specifies the length of the string. The string is written
         /// at the location specified by the XStart and YStart fields. See section 2.3.3.5 for information about the encoding of the field.
-        self.string = try dataStream.readString(count: Int(self.stringLength), encoding: .ascii)!
+        self.string = try dataStream.readString(count: Int(self.stringLength), encoding: .ascii) ?? ""
         
         if (self.stringLength % 2) != 0 {
             let _: UInt8 = try dataStream.read()
